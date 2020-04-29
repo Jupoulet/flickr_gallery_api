@@ -1,0 +1,15 @@
+{
+    "development": {
+      "baseUrl": "http://localhost:4000",
+      "frontUrl": "http://localhost:3000"
+    },
+    "test": {
+      "baseUrl": "http://localhost:4000",
+      "frontUrl": "http://localhost:3000"
+    },
+    "production": {
+        "baseUrl": "http://82.123.105.222:4100",
+        "frontUrl": "http://82.123.105.222:3100"
+    }
+  }
+  
