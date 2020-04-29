@@ -92,6 +92,12 @@ router.route('/:id?')
         year: req.body.date || Date.now(),
         description: req.body.description
     })
+    fs.access(`${process.env.PWD}/${req.file.path}`, fs.constants.F_OK, (err) => {
+        if (err) { return console.error(err) }
+        fs.unlink(`${process.env.PWD}/${req.file.path}`, (err) => {
+            if(err) { return console.error(err) }
+        })
+    });
     return res.json(photo)
 })
 
