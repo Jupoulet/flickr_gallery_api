@@ -25,14 +25,8 @@ app.use(function(req, res, next) {
   next();
 });
 
-app.get('/', (req, res) => {
-  console.log('QUERY', req.query)
-  console.log('BODY', req.body)
-  return res.end()
-})
-
 app.use('/flickr', require(`${process.env.PWD}/routes/flickr.js`))
-app.use('/public', require(`${process.env.PWD}/routes/public.js`))
+// app.use('/public', require(`${process.env.PWD}/routes/public.js`))
 app.use('/folders', require(`${process.env.PWD}/routes/folders.js`))
 app.use('/photos', require(`${process.env.PWD}/routes/photos.js`))
 

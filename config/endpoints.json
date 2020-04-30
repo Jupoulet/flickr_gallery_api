@@ -8,8 +8,8 @@
       "frontUrl": "http://localhost:3000"
     },
     "production": {
-        "baseUrl": "http://82.123.105.222:4100",
-        "frontUrl": "http://82.123.105.222:3100"
+        "baseUrl": "https://api.olivier-picard.com",
+        "frontUrl": "https://olivier-picard.com"
     }
   }
   

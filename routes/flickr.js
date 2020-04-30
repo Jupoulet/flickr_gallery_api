@@ -12,7 +12,6 @@ var oauth = new Flickr.OAuth(
 // };
 
 function getRequestToken(req, res) {
-    //https://hooks.zapier.com/hooks/catch/7396711/or3fx52/
 	oauth.request(`${BASE_URL}/flickr/oauth/callback`).then(function (_res) {
 		var requestToken = _res.body.oauth_token;
 		var requestTokenSecret = _res.body.oauth_token_secret;
