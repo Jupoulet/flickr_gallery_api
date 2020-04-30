@@ -5,9 +5,12 @@ const { upload_flickr_photo, get_photo_info } = require(`${process.env.PWD}/serv
 
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
+        console.log('DESTINATION MULTER MIDDLEWARE', file)
         if (fs.existsSync(`${process.env.PWD}/public${req.body.path || ''}`)) {
+            console.log('Should store');
             cb(null, `./public${req.body.path || ''}`)
         } else {
+            console.log('MAKING DIRECTORY')
             fs.mkdir(`./public${req.body.path || ''}`, (err) => {
                 if (err) { return console.error(err) }
                 cb(null, `./public${req.body.path || ''}`)
@@ -15,6 +18,7 @@ var storage = multer.diskStorage({
         }
     },
     filename: function (req, file, cb) {
+        console.log('FILENAME MULTER MIDDLEWARE', file)
       cb(null, `${req.body.name || file.originalname}_${Date.now()}.${file.mimetype.split('/')[1]}`)
     }
   })
