@@ -62,11 +62,14 @@ router.route('/:id?')
 })
 
 .post(upload.single('photo'), async (req, res) => { // upload.single('photo')
+    console.log('POSTING FOLDER')
     if (!req.body) { return res.status(401).json({ error: 'Body required' })}
 
+    console.log('ASK FLICKR')
     let upload = await upload_flickr_photo(req, res, { user: req.body.id, photo: req.file })
     let photos_details = await get_photo_info ({ id: upload.photoid._content })
 
+    console.log('DONE with FLICKR')
     let { farm, server, id, secret } = photos_details.photo
     let photoUrl = `https://farm${farm}.staticflickr.com/${server}/${id}_${secret}.png`
     let folder = await models.folder.create({
