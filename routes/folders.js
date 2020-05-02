@@ -19,7 +19,7 @@ var storage = multer.diskStorage({
     },
     filename: function (req, file, cb) {
         console.log('FILENAME MULTER MIDDLEWARE', file)
-      cb(null, `${req.body.name || file.originalname}_${Date.now()}.${file.mimetype.split('/')[1]}`)
+      cb(null, `${file.originalname.replace(/\.png|\.jpeg|\.jpg/, '')}.${file.mimetype.split('/')[1]}`)
     }
   })
    
@@ -40,10 +40,14 @@ router.route('/:id?')
                 },
                 {
                     model: models.photos,
-                    as: 'photos'
+                    as: 'photos',
+                    order: [
+                        ['id', 'DESC']
+                    ]
                 }
             ]
         })
+        folder.photos = folder.photos.sort((a, b) => a.id - b.id)
         return res.json(folder)
     }
     let folders = await models.folder.findAll({

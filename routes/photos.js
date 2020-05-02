@@ -18,7 +18,7 @@ var storage = multer.diskStorage({
         }
     },
     filename: function (req, file, cb) {
-      cb(null, `${req.body.title || req.body.name || file.originalname.replace(/\.png|\.jpeg|\.jpg/, '')}_${Date.now()}.${file.mimetype.split('/')[1]}`)
+      cb(null, `${file.originalname.replace(/\.png|\.jpeg|\.jpg/, '')}.${file.mimetype.split('/')[1]}`)
     }
   })
    
@@ -39,7 +39,11 @@ router.route('/multiple')
                 let photoUrl = `https://farm${farm}.staticflickr.com/${server}/${id}_${originalsecret}.png`
                 let _photo = await models.photos.create({
                     folderId: req.body.folderId / 1,
-                    file: photoUrl
+                    file: photoUrl,
+                    title: photo.filename,
+                    data: {
+                        ...photo
+                    }
                 })
                 created_photos.push(_photo)
                 fs.access(`${process.env.PWD}/${photo.path}`, fs.constants.F_OK, (err) => {
@@ -80,6 +84,9 @@ router.route('/:id?')
                 model: models.folder,
                 as: 'folder'
             }
+        ],
+        order: [
+            ['id', 'DESC']
         ]
     })
     return res.json(photos)
@@ -100,7 +107,10 @@ router.route('/:id?')
         title: req.body.title,
         file: photoUrl,
         year: req.body.date || Date.now(),
-        description: req.body.description
+        description: req.body,
+        data: {
+            ...req.file
+        }
     })
     fs.access(`${process.env.PWD}/${req.file.path}`, fs.constants.F_OK, (err) => {
         if (err) { return console.error(err) }
