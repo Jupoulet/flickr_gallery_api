@@ -101,14 +101,21 @@ router.route('/:id?')
     return res.json(photo)
 })
 
-.put(async (req, res) => {
+.put(upload.single('photo'), async (req, res) => {
     if (!req.body || !req.params.id) { return res.status(401).json({ error: 'Body and id of folder required' })}
     let photo = await models.photos.findByPk(req.params.id)
+    if (req.file) {
+        let upload = await upload_flickr_photo(req, res, { user: req.body.id, photo: req.file })
+        let photos_details = await get_photo_info ({ id: upload.photoid._content })
+        let { farm, server, id, secret, originalsecret } = photos_details.photo
+        var photoUrl = `https://farm${farm}.staticflickr.com/${server}/${id}_${originalsecret}.png`
+    }
     await photo.update({
         ...(req.body.title ? { title: req.body.title } : { }),
         ...(req.body.description ? { description: req.body.description } : { }),
         ...(req.body.year ? { year: req.body.year } : { }),
-        ...(req.body.folderId ? { folderId: req.body.folderId } : { })
+        ...(req.body.folderId ? { folderId: req.body.folderId } : { }),
+        ...(photoUrl ? { file: photoUrl } : {})
     })
     return res.json(photo)
 })

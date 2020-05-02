@@ -66,7 +66,7 @@ function verifyRequestToken(req, res, query) {
             console.error(err)
             res.setHeader('location', `${FRONT_URL}/?auth=failed`);
         } else {
-            res.setHeader('location', `${FRONT_URL}/?auth=success&userId=${userNsid}`);
+            res.setHeader('location', `${FRONT_URL}/admin?userId=${userNsid}`);
         }
         return res.end()
         })

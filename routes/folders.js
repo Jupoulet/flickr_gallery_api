@@ -89,14 +89,29 @@ router.route('/:id?')
     return res.json(folder)
 })
 
-.put(async (req, res) => {
+.put(upload.single('photo'), async (req, res) => {
     if (!req.body || !req.params.id) { return res.status(401).json({ error: 'Body and id of folder required' })}
     let folder = await models.folder.findByPk(req.params.id)
+
+    if (req.file) {
+        let upload = await upload_flickr_photo(req, res, { user: req.body.id, photo: req.file })
+        let photos_details = await get_photo_info ({ id: upload.photoid._content })
+        let { farm, server, id, secret } = photos_details.photo
+        var photoUrl = `https://farm${farm}.staticflickr.com/${server}/${id}_${secret}.png`
+
+        //Deleting the file in the file system
+        fs.access(`${process.env.PWD}/${req.file.path}`, fs.constants.F_OK, (err) => {
+            if (err) { return console.error(err) }
+            fs.unlink(`${process.env.PWD}/${req.file.path}`, (err) => {
+                if(err) { return console.error(err) }
+            })
+        });
+    }
     await folder.update({
         ...(req.body.name ? { name: req.body.name } : { }),
         ...(req.body.description ? { description: req.body.description } : { }),
         ...(req.body.parentId ? { parentId: req.body.parentId } : { }),
-        ...(req.body.mainPhoto ? { mainPhoto: req.body.mainPhoto } : { })
+        ...(photoUrl ? { mainPhoto: photoUrl } : { })
     })
     return res.json(folder)
 })
