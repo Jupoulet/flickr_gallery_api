@@ -6,9 +6,11 @@ const { upload_flickr_photo, get_photo_info } = require(`${process.env.PWD}/serv
 
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
+        console.log('DESTINATION MULTER MIDDLEWARE', file)
         if (fs.existsSync(`${process.env.PWD}/public${req.body.path || ''}`)) {
             cb(null, `./public${req.body.path || ''}`)
         } else {
+            console.log('MAKING DIRECTORY')
             fs.mkdir(`./public${req.body.path || ''}`, (err) => {
                 if (err) { return console.error(err) }
                 cb(null, `./public${req.body.path || ''}`)
@@ -24,12 +26,12 @@ const upload = multer({ storage: storage })
 
 router.route('/multiple')
 .post(upload.array('photo', 20), async (req, res) => {
-
     if (!req.body) { return res.status(401).json({ error: 'Body required' })}
 
     let created_photos = []
     await Promise.all(
         req.files.map((async photo => {
+            console.log('ASK FLICKR:' + photo.filename)
             let upload = await upload_flickr_photo(req, res, { user: req.body.id, photo })
             let photos_details = await get_photo_info ({ id: upload.photoid._content })
             let { farm, server, id, secret, originalsecret } = photos_details.photo
