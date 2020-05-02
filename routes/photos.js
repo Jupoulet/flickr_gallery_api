@@ -31,23 +31,31 @@ router.route('/multiple')
     let created_photos = []
     await Promise.all(
         req.files.map((async photo => {
-            console.log('ASK FLICKR:' + photo.filename)
-            let upload = await upload_flickr_photo(req, res, { user: req.body.id, photo })
-            let photos_details = await get_photo_info ({ id: upload.photoid._content })
-            let { farm, server, id, secret, originalsecret } = photos_details.photo
-            let photoUrl = `https://farm${farm}.staticflickr.com/${server}/${id}_${originalsecret}.png`
-            let _photo = await models.photos.create({
-                folderId: req.body.folderId / 1,
-                file: photoUrl
-            })
-            created_photos.push(_photo)
-            fs.access(`${process.env.PWD}/${photo.path}`, fs.constants.F_OK, (err) => {
-                if (err) { return console.error(err) }
-                fs.unlink(`${process.env.PWD}/${photo.path}`, (err) => {
-                    if(err) { return console.error(err) }
+            try {
+                console.log('ASK FLICKR:' + photo.filename)
+                let upload = await upload_flickr_photo(req, res, { user: req.body.id, photo })
+                let photos_details = await get_photo_info ({ id: upload.photoid._content })
+                let { farm, server, id, secret, originalsecret } = photos_details.photo
+                let photoUrl = `https://farm${farm}.staticflickr.com/${server}/${id}_${originalsecret}.png`
+                let _photo = await models.photos.create({
+                    folderId: req.body.folderId / 1,
+                    file: photoUrl
                 })
-            });
-            return _photo
+                created_photos.push(_photo)
+                fs.access(`${process.env.PWD}/${photo.path}`, fs.constants.F_OK, (err) => {
+                    if (err) { return console.error(err) }
+                    fs.unlink(`${process.env.PWD}/${photo.path}`, (err) => {
+                        if(err) { return console.error(err) }
+                    })
+                });
+                return _photo
+            } catch (error) {
+                console.error({
+                    error,
+                    photo
+                })
+                return error
+            }
         }))
     )
     return res.json(created_photos)
@@ -105,13 +113,14 @@ router.route('/:id?')
 
 .put(upload.single('photo'), async (req, res) => {
     if (!req.body || !req.params.id) { return res.status(401).json({ error: 'Body and id of folder required' })}
-    let photo = await models.photos.findByPk(req.params.id)
+    let photo = await models.photos.findByPk(req.params.id / 1)
     if (req.file) {
         let upload = await upload_flickr_photo(req, res, { user: req.body.id, photo: req.file })
         let photos_details = await get_photo_info ({ id: upload.photoid._content })
         let { farm, server, id, secret, originalsecret } = photos_details.photo
         var photoUrl = `https://farm${farm}.staticflickr.com/${server}/${id}_${originalsecret}.png`
     }
+
     await photo.update({
         ...(req.body.title ? { title: req.body.title } : { }),
         ...(req.body.description ? { description: req.body.description } : { }),
