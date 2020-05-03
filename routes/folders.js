@@ -71,19 +71,24 @@ router.route('/:id?')
 .post(upload.single('photo'), async (req, res) => { // upload.single('photo')
     console.log('POSTING FOLDER')
     if (!req.body) { return res.status(401).json({ error: 'Body required' })}
+    try {
+        console.log('ASK FLICKR')
+        let upload = await upload_flickr_photo(req, res, { user: req.body.id, photo: req.file })
+        console.log('UPLOAD DONE')
+        let photos_details = await get_photo_info ({ id: upload.photoid._content })
 
-    console.log('ASK FLICKR')
-    let upload = await upload_flickr_photo(req, res, { user: req.body.id, photo: req.file })
-    let photos_details = await get_photo_info ({ id: upload.photoid._content })
-
-    console.log('DONE with FLICKR')
-    let { farm, server, id, secret } = photos_details.photo
-    let photoUrl = `https://farm${farm}.staticflickr.com/${server}/${id}_${secret}.png`
-    let folder = await models.folder.create({
-        name: req.body.name,
-        mainPhoto: photoUrl,
-        description: req.body.description || ''
-    })
+        console.log('DONE with FLICKR')
+        let { farm, server, id, secret } = photos_details.photo
+        let photoUrl = `https://farm${farm}.staticflickr.com/${server}/${id}_${secret}.png`
+        var folder = await models.folder.create({
+            name: req.body.name,
+            mainPhoto: photoUrl,
+            description: req.body.description || ''
+        })
+    } catch (error) {
+        console.error(error)
+        return res.end()
+    }
 
     //Deleting the file in the file system
     fs.access(`${process.env.PWD}/${req.file.path}`, fs.constants.F_OK, (err) => {
