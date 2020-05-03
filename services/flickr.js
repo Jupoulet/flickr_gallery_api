@@ -43,4 +43,31 @@ const upload_flickr_photo = async (req, res, { user, photo } = { }) => {
     })
 }
 
-module.exports = { upload_flickr_photo, get_photo_info }
+
+const delete_flickr_photo = async (req, res, { user, id } = { }) => {
+    user = db.users.get(user);
+    if (!user) {
+        res.statusCode = 302;
+        res.setHeader('location', `${BASE_URL}/flickr`);
+        return res.end()
+    }
+    var auth = Flickr.OAuth.createPlugin(
+      process.env.FLICKR_CONSUMER_KEY,
+      process.env.FLICKR_CONSUMER_SECRET,
+      user.oauthToken,
+      user.oauthTokenSecret
+    );
+
+    return new Promise(function (resolve, reject) {
+        flickr.photos.delete({ photo_id: id })
+        .then((result) => {
+            console.log('HELLO DELETION', result.body)
+            resolve(result)
+        })
+        .catch((err) => {
+            console.log('Error')
+            resolve(err)
+        })
+    })
+}
+module.exports = { upload_flickr_photo, get_photo_info, delete_flickr_photo }

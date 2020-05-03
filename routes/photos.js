@@ -1,7 +1,7 @@
 const router = require('express').Router()
 const fs = require('fs');
 const multer = require('multer');
-const { upload_flickr_photo, get_photo_info } = require(`${process.env.PWD}/services/flickr`)
+const { upload_flickr_photo, get_photo_info, delete_flickr_photo } = require(`${process.env.PWD}/services/flickr`)
 
 
 var storage = multer.diskStorage({
@@ -154,6 +154,11 @@ router.route('/:id?')
         })
     });
 
+    //Delete photo from Flickr
+    if (req.body.id) {
+        await delete_flickr_photo(req, res, { user: req.body.id, id: photo.file.split('/').reverse()[0].split('_')[0] / 1 })
+    }
+
     //Delete photo from database
     let deleted_photo = await models.photos.destroy({
         where: {
@@ -165,6 +170,36 @@ router.route('/:id?')
         deleted_photo,
         photo
     })
+})
+
+router.route('/delete/all')
+.delete(async (req, res) => {
+    const photos =  await models.photos.findAll({
+        attributes: ['file', 'id']
+    })
+
+    photos.map((photo) => {
+        photo.photoId = photo.file.split('/').reverse()[0].split('_')[0] / 1
+    })
+
+    await Promise.all(
+        photos.map(async (photo) => {
+            try {
+                let deletion = await delete_flickr_photo(req, res, { user: req.body.id, id: photo.photoId / 1 })
+
+                return deletion
+                    
+            } catch (error) {
+                return error;
+            }
+        })
+    )
+
+    await models.photos.destroy({ truncate : true })
+
+
+    return res.json({ message: 'Finish' })
+
 })
 
 module.exports = router

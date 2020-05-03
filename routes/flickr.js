@@ -22,7 +22,7 @@ function getRequestToken(req, res) {
 		// redirect the user to flickr and ask them to authorize your app.
 		// perms default to "read", but you may specify "write" or "delete".
 		res.statusCode = 302;
-		res.setHeader('location', oauth.authorizeUrl(requestToken, 'write'));
+		res.setHeader('location', oauth.authorizeUrl(requestToken, 'delete'));
 		res.end();
 
 	}).catch(function (err) {
