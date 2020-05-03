@@ -15,6 +15,58 @@ const get_photo_info = async ({ id } = { }) => {
     })
 }
 
+const get_albums = async ({ id } = { }) => {
+    if (!id) { return }
+    return new Promise(function (resolve, reject) {
+        flickr.photosets.getList({ user_id: id })
+        .then((result) => {
+            resolve(result.body)
+        })
+        .catch((err) => {
+            reject(err)
+        })
+    })
+}
+
+const get_album = async ({ album_id, user_id } = { }) => {
+    if (!album_id) { return }
+    return new Promise(function (resolve, reject) {
+        flickr.photosets.getInfo({ user_id, photoset_id: album_id })
+        .then((result) => {
+            resolve(result.body)
+        })
+        .catch((err) => {
+            reject(err)
+        })
+    })
+}
+
+const get_photos_album = async ({ user_id, album_id } = { }) => {
+    if (!user_id || album_id) { return }
+    return new Promise(function (resolve, reject) {
+        flickr.photosets.getPhotos({ user_id, photoset_id: album_id })
+        .then((result) => {
+            resolve(result.body)
+        })
+        .catch((err) => {
+            reject (err)
+        })
+    })
+}
+
+const get_user_photos = async ({ id } = { }) => {
+    if (!id) { return }
+    return new Promise(function (resolve, reject) {
+        flickr.people.getPhotos({ user_id: id })
+        .then((result) => {
+            resolve(result.body)
+        })
+        .catch((err) => {
+            reject(err)
+        })
+    })
+}
+
 const upload_flickr_photo = async (req, res, { user, photo } = { }) => {
     user = db.users.get(user);
     if (!user) {
@@ -70,4 +122,12 @@ const delete_flickr_photo = async (req, res, { user, id } = { }) => {
         })
     })
 }
-module.exports = { upload_flickr_photo, get_photo_info, delete_flickr_photo }
+module.exports = {
+    upload_flickr_photo,
+    get_photo_info,
+    delete_flickr_photo,
+    get_user_photos,
+    get_albums,
+    get_photos_album,
+    get_album
+}

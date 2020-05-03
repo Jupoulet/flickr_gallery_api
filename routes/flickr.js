@@ -6,6 +6,8 @@ var oauth = new Flickr.OAuth(
 	process.env.FLICKR_CONSUMER_SECRET
 );
 
+router.use('/photos', require(`${process.env.PWD}/routes/flickr/photos.js`))
+router.use('/albums', require(`${process.env.PWD}/routes/flickr/albums.js`))
 // var db = {
 // 	users: new Map(),
 // 	oauth: new Map()

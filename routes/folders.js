@@ -1,7 +1,7 @@
 const router = require('express').Router()
 const multer = require('multer');
 const fs = require('fs')
-const { upload_flickr_photo, get_photo_info } = require(`${process.env.PWD}/services/flickr`)
+const { upload_flickr_photo, get_photo_info, delete_flickr_photo } = require(`${process.env.PWD}/services/flickr`)
 
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -47,8 +47,11 @@ router.route('/:id?')
                 }
             ]
         })
-        folder.photos = folder.photos.sort((a, b) => a.id - b.id)
-        return res.json(folder)
+
+        return res.json({
+            ...folder.dataValues,
+            photos: folder.photos.sort((a, b) => a.data.originalname.replace(/\.png/, '') - b.data.originalname.replace(/\.png/, ''))
+        })
     }
     let folders = await models.folder.findAll({
         include: [
@@ -122,11 +125,18 @@ router.route('/:id?')
 
 .delete(async (req, res) => {
     if (!req.params.id) { return res.status(401).json({ error: 'id of folder required' })}
-    let folder = await models.folder.destroy({
+    const folder = await models.folder.findByPk(req.params.id)
+    await models.folder.destroy({
         where: {
             id: req.params.id
         }
     })
+
+    try {
+        await delete_flickr_photo(req, res, { user: req.body.id || '188154180@N06', id: folder.mainPhoto.split('/').reverse()[0].split('_')[0] })
+    } catch (error) {
+        console.log(error)
+    }
 
     return res.json(folder)
 })
