@@ -50,7 +50,7 @@ router.route('/:id?')
 
         return res.json({
             ...folder.dataValues,
-            photos: folder.photos.sort((a, b) => a.data.originalname.replace(/\.png/, '') - b.data.originalname.replace(/\.png/, ''))
+            photos: folder.photos.sort((a, b) => a.data.originalname.replace(/\.[a-zA-Z]*/g, '') - b.data.originalname.replace(/\.png/, ''))
         })
     }
     let folders = await models.folder.findAll({
