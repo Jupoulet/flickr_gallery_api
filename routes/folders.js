@@ -5,6 +5,8 @@ const { upload_flickr_photo, get_photo_info, delete_flickr_photo } = require(`${
 
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
+        db.request = 'Transfert...'
+
         console.log('DESTINATION MULTER MIDDLEWARE', file)
         if (fs.existsSync(`${process.env.PWD}/public${req.body.path || ''}`)) {
             console.log('Should store');
@@ -72,6 +74,9 @@ router.route('/:id?')
     console.log('POSTING FOLDER')
     if (!req.body) { return res.status(401).json({ error: 'Body required' })}
     try {
+
+        db.request = 'Transfert photo vers Flickr'
+
         console.log('ASK FLICKR')
         let upload = await upload_flickr_photo(req, res, { user: req.body.id, photo: req.file })
         console.log('UPLOAD DONE')
@@ -87,6 +92,7 @@ router.route('/:id?')
         })
     } catch (error) {
         console.error(error)
+        db.request = 'Terminé'
         return res.end()
     }
 
@@ -97,7 +103,7 @@ router.route('/:id?')
             if(err) { return console.error(err) }
         })
     });
-
+    db.request = 'Terminé';
     return res.json(folder)
 })
 

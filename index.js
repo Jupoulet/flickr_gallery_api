@@ -11,7 +11,8 @@ global.BASE_URL = require('./config/endpoints.json')[env].baseUrl
 global.FRONT_URL = require('./config/endpoints.json')[env].frontUrl
 global.db = {
 	users: new Map(),
-	oauth: new Map()
+  oauth: new Map(),
+  request: 'Terminé'
 }
 
 global.models = require('./models');
@@ -26,6 +27,7 @@ app.use(function(req, res, next) {
 });
 
 app.use('/flickr', require(`${process.env.PWD}/routes/flickr.js`))
+app.use('/status', require(`${process.env.PWD}/routes/status.js`))
 // app.use('/public', require(`${process.env.PWD}/routes/public.js`))
 app.use('/folders', require(`${process.env.PWD}/routes/folders.js`))
 app.use('/photos', require(`${process.env.PWD}/routes/photos.js`))

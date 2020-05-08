@@ -6,6 +6,7 @@ const { upload_flickr_photo, get_photo_info, delete_flickr_photo, get_user_photo
 
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
+        db.request = 'Transfert...'
         console.log('DESTINATION MULTER MIDDLEWARE', file)
         if (fs.existsSync(`${process.env.PWD}/public${req.body.path || ''}`)) {
             cb(null, `./public${req.body.path || ''}`)
@@ -27,6 +28,7 @@ const upload = multer({ storage: storage })
 router.route('/multiple')
 .post(upload.array('photo', 20), async (req, res) => {
     if (!req.body) { return res.status(401).json({ error: 'Body required' })}
+    db.request = 'Transfert vers Flickr'
 
     let created_photos = []
     await Promise.all(
@@ -62,6 +64,8 @@ router.route('/multiple')
             }
         }))
     )
+    db.request = 'Terminé'
+
     return res.json(created_photos)
 })
 
@@ -96,6 +100,7 @@ router.route('/:id?')
 
     if (!req.body) { return res.status(401).json({ error: 'Body required' })}
     // Upload to Flickr
+    db.request = 'Transfert vers Flickr'
 
     let upload = await upload_flickr_photo(req, res, { user: req.body.id, photo: req.file })
     let photos_details = await get_photo_info ({ id: upload.photoid._content })
@@ -118,6 +123,7 @@ router.route('/:id?')
             if(err) { return console.error(err) }
         })
     });
+    db.request = 'Terminé'
     return res.json(photo)
 })
 
