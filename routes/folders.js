@@ -64,6 +64,13 @@ router.route('/:id?')
             {
                 model: models.folder,
                 as: 'children'
+            },
+            {
+                model: models.photos,
+                as: 'photos',
+                order: [
+                    ['id', 'DESC']
+                ]
             }
         ]
     })
