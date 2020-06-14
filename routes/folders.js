@@ -1,4 +1,5 @@
 const router = require('express').Router()
+const moment = require ('moment');
 const multer = require('multer');
 const fs = require('fs')
 const { upload_flickr_photo, get_photo_info, delete_flickr_photo } = require(`${process.env.PWD}/services/flickr`)
@@ -56,6 +57,9 @@ router.route('/:id?')
         })
     }
     let folders = await models.folder.findAll({
+        order: [
+            ['year', 'DESC']
+        ],
         include: [
             {
                 model: models.folder,
@@ -78,24 +82,20 @@ router.route('/:id?')
 })
 
 .post(upload.single('photo'), async (req, res) => { // upload.single('photo')
-    console.log('POSTING FOLDER')
     if (!req.body) { return res.status(401).json({ error: 'Body required' })}
     try {
 
         db.request = 'Transfert photo vers Flickr'
-
-        console.log('ASK FLICKR')
         let upload = await upload_flickr_photo(req, res, { user: req.body.id, photo: req.file })
-        console.log('UPLOAD DONE')
         let photos_details = await get_photo_info ({ id: upload.photoid._content })
 
-        console.log('DONE with FLICKR')
         let { farm, server, id, secret } = photos_details.photo
         let photoUrl = `https://farm${farm}.staticflickr.com/${server}/${id}_${secret}.png`
         var folder = await models.folder.create({
             name: req.body.name,
             mainPhoto: photoUrl,
-            description: req.body.description || ''
+            description: req.body.description || '',
+            year: req.body.year || null
         })
     } catch (error) {
         console.error(error)
@@ -136,7 +136,8 @@ router.route('/:id?')
         ...(req.body.name ? { name: req.body.name } : { }),
         ...(req.body.description ? { description: req.body.description } : { }),
         ...(req.body.parentId ? { parentId: req.body.parentId } : { }),
-        ...(photoUrl ? { mainPhoto: photoUrl } : { })
+        ...(photoUrl ? { mainPhoto: photoUrl } : { }),
+        ...(req.body.year ? { year: moment(req.body.year, 'YYYY') } : { })
     })
     return res.json(folder)
 })

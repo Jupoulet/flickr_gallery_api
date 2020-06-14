@@ -26,6 +26,7 @@ app.use(function(req, res, next) {
   next();
 });
 
+app.use('/tools', require(`${process.env.PWD}/routes/tools.js`))
 app.use('/flickr', require(`${process.env.PWD}/routes/flickr.js`))
 app.use('/status', require(`${process.env.PWD}/routes/status.js`))
 // app.use('/public', require(`${process.env.PWD}/routes/public.js`))
