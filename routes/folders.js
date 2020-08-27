@@ -39,7 +39,16 @@ router.route('/:id?')
                 },
                 {
                     model: models.folder,
-                    as: 'children'
+                    as: 'children',
+                    include: [
+                        {
+                            model: models.photos,
+                            as: 'photos',
+                            order: [
+                                ['id', 'DESC']
+                            ]
+                        }
+                    ]
                 },
                 {
                     model: models.photos,
@@ -57,6 +66,9 @@ router.route('/:id?')
         })
     }
     let folders = await models.folder.findAll({
+        where: {
+            parentId: { [Op.eq]: null }
+        },
         order: [
             ['year', 'DESC']
         ],
@@ -67,7 +79,16 @@ router.route('/:id?')
             },
             {
                 model: models.folder,
-                as: 'children'
+                as: 'children',
+                include: [
+                    {
+                        model: models.photos,
+                        as: 'photos',
+                        order: [
+                            ['id', 'DESC']
+                        ]
+                    }
+                ]
             },
             {
                 model: models.photos,
@@ -95,7 +116,8 @@ router.route('/:id?')
             name: req.body.name,
             mainPhoto: photoUrl,
             description: req.body.description || '',
-            year: req.body.year || null
+            year: req.body.year || null,
+            ...(req.body.parentId && { parentId: req.body.parentId / 1 } || { })
         })
     } catch (error) {
         console.error(error)
