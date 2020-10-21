@@ -6,6 +6,8 @@ const router = express.Router();
 let cors = require('cors')
 const bodyParser = require('body-parser');
 
+const { get_user_photos, get_photo_info } = require(`${process.env.PWD}/services/flickr`)
+
 const env = process.env.NODE_ENV || 'development'
 global.BASE_URL = require('./config/endpoints.json')[env].baseUrl
 global.FRONT_URL = require('./config/endpoints.json')[env].frontUrl
@@ -32,6 +34,15 @@ app.use('/status', require(`${process.env.PWD}/routes/status.js`))
 // app.use('/public', require(`${process.env.PWD}/routes/public.js`))
 app.use('/folders', require(`${process.env.PWD}/routes/folders.js`))
 app.use('/photos', require(`${process.env.PWD}/routes/photos.js`))
+app.get('/regen/:user_id', async (req, res) => {
+  console.log('HELLOOOO', req.params.user_id);
+  let photos = await get_user_photos({ id: req.params.user_id })
+  let photo = photos.photos.photo[0]
+  console.log('PHOTOS', photo)
+  let info  = await get_photo_info({ id: photo.id })
+  console.log('INFo', info)
+  return res.end()
+})
 
 app.listen(process.env.PORT || 4000, function () {
   console.log(`[${env.toUpperCase()}]`[{ production: 'red' }[env] || 'blue'] + `Gallery API running on port `+  `${process.env.PORT || 4000}`.yellow)
