@@ -17,6 +17,8 @@ global.db = {
   request: 'Terminé'
 }
 
+console.log (process.env.DATA)
+
 global.models = require('./models');
 global.Op = models.Sequelize.Op;
 
