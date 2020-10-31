@@ -54,10 +54,10 @@ const get_photos_album = async ({ user_id, album_id } = { }) => {
     })
 }
 
-const get_user_photos = async ({ id } = { }) => {
+const get_user_photos = async ({ id, per_page = 100, page = 1 } = { }) => {
     if (!id) { return }
     return new Promise(function (resolve, reject) {
-        flickr.people.getPhotos({ user_id: id })
+        flickr.people.getPhotos({ user_id: id, per_page, page })
         .then((result) => {
             resolve(result.body)
         })
