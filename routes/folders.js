@@ -99,7 +99,9 @@ router.route('/:id?')
             }
         ]
     })
-    return res.json(folders)
+    return res.json(folders.sort((a,z) => {
+        return z.date - a.date
+    }))
 })
 
 .post(upload.single('photo'), async (req, res) => { // upload.single('photo')
