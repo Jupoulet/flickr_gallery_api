@@ -9,7 +9,7 @@
     },
     "production": {
         "baseUrl": "https://api.olivier-picard.com",
-        "frontUrl": "http://olivier-picard.com"
+        "frontUrl": "https://olivier-picard.com"
     }
   }
   
