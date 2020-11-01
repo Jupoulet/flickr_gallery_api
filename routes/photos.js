@@ -1,4 +1,5 @@
 const router = require('express').Router()
+const axios = require('axios');
 const fs = require('fs');
 const multer = require('multer');
 const { upload_flickr_photo, get_photo_info, delete_flickr_photo, get_user_photos } = require(`${process.env.PWD}/services/flickr`)
@@ -36,6 +37,7 @@ router.route('/multiple')
             try {
                 console.log('ASK FLICKR:' + photo.filename)
                 let upload = await upload_flickr_photo(req, res, { user: req.body.id, photo })
+                if (!upload) return res.end()
                 let photos_details = await get_photo_info ({ id: upload.photoid._content })
                 let { farm, server, id, secret, originalsecret } = photos_details.photo
                 let photoUrl = `https://farm${farm}.staticflickr.com/${server}/${id}_${originalsecret}.png`
@@ -65,6 +67,7 @@ router.route('/multiple')
         }))
     )
     db.request = 'Terminé'
+    axios.get(`https://hook.integromat.com/p8nyyz9kjx8wduqg5q6vr8esia7lp3jf?message=Photos importées: ${req.files.length}`)
 
     return res.json(created_photos)
 })
