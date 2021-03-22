@@ -11,10 +11,10 @@ const db = {};
 let sequelize;
 if (config.use_env_variable) {
   console.log('PRODUCTION CONFIG', {
-    'process.env': process.env[config.use_env_variable],
-    config,
+    before: process.env[config.use_env_variable],
+    after: `${process.env[config.use_env_variable]}&sslmode=require`
   })
-  sequelize = new Sequelize(process.env[config.use_env_variable], config);
+  sequelize = new Sequelize(`${process.env[config.use_env_variable]}&sslmode=require`, config);
 } else {
   sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
