@@ -25,11 +25,12 @@ var storage = multer.diskStorage({
       cb(null, `${file.originalname.replace(/\.png|\.jpeg|\.jpg/, '')}.${file.mimetype.split('/')[1]}`)
     }
   })
-   
+
 const upload = multer({ storage: storage })
 
 router.route('/:id?')
 .get(async (req, res) => {
+    console.log('FOLDER ROUTE');
     if (req.params.id) {
         let folder = await models.folder.findByPk(req.params.id / 1, {
             include: [
@@ -65,6 +66,7 @@ router.route('/:id?')
             photos: folder.photos.sort((a, b) => a.title.replace(/\.[a-zA-Z]*/g, '') - b.title.replace(/\.[a-zA-Z]*/g, ''))
         })
     }
+    console.log('QUERYING FOLDERS');
     let folders = await models.folder.findAll({
         where: {
             parentId: { [Op.eq]: null }
@@ -99,6 +101,7 @@ router.route('/:id?')
             }
         ]
     })
+    console.log('FOLDERS FOUNDED ?', folders.length);
     return res.json(folders.sort((a,z) => {
         return z.date - a.date
     }))
