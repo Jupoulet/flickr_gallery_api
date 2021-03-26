@@ -23,9 +23,9 @@
     "dialect": "postgres",
     "operatorsAliases": false,
     "use_env_variable": "DATABASE_URL",
-    "dialectOptions": {
-      "ssl": true
-    },
-    "ssl": true
+    "sslmode": "no-verify",
+    "ssl": {
+      "rejectUnauthorized": false
+    }
   }
 }
