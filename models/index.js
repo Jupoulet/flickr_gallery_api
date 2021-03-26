@@ -11,6 +11,7 @@ const db = {};
 let sequelize;
 if (config.use_env_variable) {
   sequelize = new Sequelize(process.env[config.use_env_variable] + '?sslmode=no-verify&ssl={rejectUnauthorized:false}', config);
+  console.log('SEQUELIZE', sequelize)
 } else {
   sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
