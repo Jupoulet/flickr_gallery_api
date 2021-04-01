@@ -15,8 +15,9 @@ if (env === 'production') {
     logging: false,
     dialect: 'postgres',
     dialectOptions: {
-      ssl: true,
-      rejectUnauthorized: false
+      ssl: {
+        rejectUnauthorized: false
+      }
     }
   });
 } else {
