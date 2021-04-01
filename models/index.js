@@ -11,15 +11,24 @@ const db = {};
 let sequelize;
 if (env === 'production') {
   console.log('Production environment', process.env.DATABASE_URL);
-  sequelize = new Sequelize(`${process.env.DATABASE_URL}`, {
-    logging: false,
-    dialect: 'postgres',
-    dialectOptions: {
-      ssl: {
-        rejectUnauthorized: false
+  sequelize = new Sequelize(process.env.DATABASE_URL, {
+        dialectOptions: {
+          ssl: {
+            require: true,
+            rejectUnauthorized: false
+          }
+        }
       }
-    }
-  });
+  );
+
+  sequelize
+      .authenticate()
+      .then(() => {
+        console.log('Connection has been established successfully.');
+      })
+      .catch(err => {
+        console.error('Unable to connect to the database:', err);
+      });
 } else {
   sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
