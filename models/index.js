@@ -11,13 +11,16 @@ const db = {};
 let sequelize;
 if (env === 'production') {
   console.log('Production environment');
-  sequelize = new Sequelize(process.env.DATABASE_URL, {
-      dialect: 'postgres',
-      dialectOptions: {
-        ssl: true
+  sequelize = new Sequelize(`${process.env.DATABASE_URI}?sslmode=require`, {
+    url: process.env.DATABASE_URI,
+    dialect: 'postgres',
+    logging: false,
+    dialectOptions: {
+      ssl: {
+        rejectUnauthorized: false, // very important
       }
     }
-  );
+  });
 
   console.log('Try to authenticate');
 
