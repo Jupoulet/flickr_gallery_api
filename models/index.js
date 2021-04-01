@@ -10,8 +10,8 @@ const db = {};
 
 let sequelize;
 if (env === 'production') {
-  console.log('Production environment', process.env.DATABASE_URI);
-  const sequelize = new Sequelize(`${process.env.DATABASE_URI}?sslmode=require`, {
+  console.log('Production environment', process.env.DATABASE_URL);
+  const sequelize = new Sequelize(`${process.env.DATABASE_URL}?sslmode=require`, {
     // url: process.env.DATABASE_URI,
     dialect: 'postgres',
     //logging: false,
