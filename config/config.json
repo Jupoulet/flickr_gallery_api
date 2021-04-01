@@ -28,6 +28,10 @@
         "require": true,
         "rejectUnauthorized": false
       }
+    },
+    "sslmode": "no-verify",
+    "ssl": {
+      "rejectUnauthorized": false
     }
   }
 }
