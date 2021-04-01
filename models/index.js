@@ -10,10 +10,24 @@ const db = {};
 
 let sequelize;
 if (config.use_env_variable) {
-  sequelize = new Sequelize(process.env[config.use_env_variable] + '?sslmode=no-verify', config);
-  console.log('SEQUELIZE', {
-    ssl: sequelize.config.ssl
-  })
+  sequelize = new Sequelize(process.env.DATABASE_URL, {
+        dialectOptions: {
+          ssl: {
+            require: true,
+            rejectUnauthorized: false
+          }
+        }
+      }
+  );
+
+  sequelize
+      .authenticate()
+      .then(() => {
+        console.log('Connection successful');
+      })
+      .catch(err => {
+        console.error('Unable to connect to DB', err)
+      })
 } else {
   sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
