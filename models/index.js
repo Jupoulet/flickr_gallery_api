@@ -9,39 +9,47 @@ const config = require(__dirname + '/../config/config.json')[env];
 const db = {};
 
 let sequelize;
-if (env === 'production') {
-  console.log('Production environment', process.env.DATABASE_URL);
-  sequelize = new Sequelize(process.env.DATABASE_URL, {
-        dialectOptions: {
-          ssl: {
-            require: true,
-            rejectUnauthorized: false
-          }
+sequelize = new Sequelize(process.env.DATABASE_URL, {
+      dialectOptions: {
+        ssl: {
+          require: true,
+          rejectUnauthorized: false
         }
       }
-  );
+    }
+);
 
-  sequelize
-      .authenticate()
-      .then(() => {
-        console.log('Connection has been established successfully.');
-      })
-      .catch(err => {
-        console.error('Unable to connect to the database:', err);
-      });
-} else {
-  sequelize = new Sequelize(config.database, config.username, config.password, config);
-}
-
-try {
-  sequelize.authenticate().then(() => {
-    console.log('Connection successful');
-  })
-} catch (e) {
-  console.log('Unable to connect to DB', err)
-}
-
-
+sequelize
+    .authenticate()
+    .then(() => {
+      console.log('Connection has been established successfully.');
+    })
+    .catch(err => {
+      console.error('Unable to connect to the database:', err);
+    });
+// if (env === 'production') {
+//   console.log('Production environment', process.env.DATABASE_URL);
+//   sequelize = new Sequelize(process.env.DATABASE_URL, {
+//         dialectOptions: {
+//           ssl: {
+//             require: true,
+//             rejectUnauthorized: false
+//           }
+//         }
+//       }
+//   );
+//
+//   sequelize
+//       .authenticate()
+//       .then(() => {
+//         console.log('Connection has been established successfully.');
+//       })
+//       .catch(err => {
+//         console.error('Unable to connect to the database:', err);
+//       });
+// } else {
+//   sequelize = new Sequelize(config.database, config.username, config.password, config);
+// }
 
 fs
   .readdirSync(__dirname)
