@@ -29,7 +29,7 @@ if (env === 'production') {
         console.log('Connection successful');
       })
       .catch(err => {
-        console.error('Unable to connect to DB', err)
+        console.log('Unable to connect to DB', err)
       })
 } else {
   sequelize = new Sequelize(config.database, config.username, config.password, config);
