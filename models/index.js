@@ -9,7 +9,8 @@ const config = require(__dirname + '/../config/config.json')[env];
 const db = {};
 
 let sequelize;
-if (config.use_env_variable) {
+if (env === 'production') {
+  console.log('Production environment');
   sequelize = new Sequelize(process.env.DATABASE_URL, {
         dialectOptions: {
           ssl: {
@@ -19,6 +20,8 @@ if (config.use_env_variable) {
         }
       }
   );
+
+  console.log('Try to authenticate');
 
   sequelize
       .authenticate()
