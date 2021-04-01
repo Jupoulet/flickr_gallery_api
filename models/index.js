@@ -15,21 +15,23 @@ if (env === 'production') {
     logging: false,
     dialect: 'postgres',
     dialectOptions: {
-      ssl: true
+      ssl: true,
+      rejectUnauthorized: false
     }
   });
 } else {
   sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
 
-sequelize
-    .authenticate()
-    .then(() => {
-      console.log('Connection successful');
-    })
-    .catch(err => {
-      console.log('Unable to connect to DB', err)
-    })
+try {
+  sequelize.authenticate().then(() => {
+    console.log('Connection successful');
+  })
+} catch (e) {
+  console.log('Unable to connect to DB', err)
+}
+
+
 
 fs
   .readdirSync(__dirname)
