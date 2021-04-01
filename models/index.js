@@ -8,29 +8,28 @@ const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/config.json')[env];
 const db = {};
 
+let sequelize;
 if (env === 'production') {
   console.log('Production environment', process.env.DATABASE_URL);
-  const sequelize = new Sequelize(`${process.env.DATABASE_URL}`, {
+  sequelize = new Sequelize(`${process.env.DATABASE_URL}`, {
     logging: false,
     dialect: 'postgres',
     dialectOptions: {
       ssl: true
     }
   });
-
-  console.log('Try to authenticate');
-
-  sequelize
-      .authenticate()
-      .then(() => {
-        console.log('Connection successful');
-      })
-      .catch(err => {
-        console.log('Unable to connect to DB', err)
-      })
 } else {
-  const sequelize = new Sequelize(config.database, config.username, config.password, config);
+  sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
+
+sequelize
+    .authenticate()
+    .then(() => {
+      console.log('Connection successful');
+    })
+    .catch(err => {
+      console.log('Unable to connect to DB', err)
+    })
 
 fs
   .readdirSync(__dirname)
