@@ -8,17 +8,13 @@ const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/config.json')[env];
 const db = {};
 
-let sequelize;
 if (env === 'production') {
   console.log('Production environment', process.env.DATABASE_URL);
-  sequelize = new Sequelize(`${process.env.DATABASE_URL}?sslmode=require`, {
-    url: process.env.DATABASE_URL,
-    dialect: 'postgres',
+  const sequelize = new Sequelize(`${process.env.DATABASE_URL}`, {
     logging: false,
+    dialect: 'postgres',
     dialectOptions: {
-      ssl: {
-        rejectUnauthorized: false, // very important
-      }
+      ssl: true
     }
   });
 
@@ -33,7 +29,7 @@ if (env === 'production') {
         console.log('Unable to connect to DB', err)
       })
 } else {
-  sequelize = new Sequelize(config.database, config.username, config.password, config);
+  const sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
 
 fs
