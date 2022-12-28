@@ -35,7 +35,7 @@ app.use('/status', require(`${process.env.PWD}/routes/status.js`))
 app.use('/folders', require(`${process.env.PWD}/routes/folders.js`))
 app.use('/photos', require(`${process.env.PWD}/routes/photos.js`))
 app.get('/regen/:user_id', async (req, res) => {
-  console.log('HELLO')
+  console.log('HELLOO')
   let photos = await get_user_photos({ id: req.params.user_id })
   let photo = photos.photos.photo[0]
   let info  = await get_photo_info({ id: photo.id })
