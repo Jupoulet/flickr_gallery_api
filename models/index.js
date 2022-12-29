@@ -30,6 +30,7 @@ if (env === 'production') {
         console.error('Unable to connect to the database:', err);
       });
 } else {
+  console.log('ENV variables', config);
   sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
 
