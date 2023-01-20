@@ -7,9 +7,6 @@
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "engines": {
-    "node": "12.x"
-  },
   "author": "Julien Picard",
   "license": "ISC",
   "dependencies": {
@@ -20,12 +17,12 @@
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "flickr-sdk": "^3.10.0",
+    "flickr-sdk": "^3.9.0",
     "multer": "^1.4.2",
-    "pg": "^8.5.1",
+    "pg": "^8.0.2",
     "pg-hstore": "^2.3.3",
-    "sequelize": "^5.22.4",
+    "sequelize": "^5.21.6",
     "sequelize-cli": "^5.5.1",
-    "sharp": "^0.25.4"
+    "sharp": "^0.25.2"
   }
 }
